@@ -13,8 +13,6 @@ Kubernetes架构：
 
 ![](../.gitbook/assets/k8s_architecture.png)
 
-![](file://D:/%E6%96%87%E6%A1%A3/kubernetes/img/kubernetes/k8s_architecture.png?lastModify=1563798730)
-
 Kubernetes主要由以下几个核心组件组成：
 
 * etcd保存了整个集群的状态；
@@ -36,19 +34,13 @@ Kubernetes主要由以下几个核心组件组成：
 
 ![](../.gitbook/assets/k8s_architecture02.png)
 
-![](file://D:/%E6%96%87%E6%A1%A3/kubernetes/img/kubernetes/k8s_architecture02.png?lastModify=1563798730)
-
 Master:
 
 ![](../.gitbook/assets/k8s_architecture_master.png)
 
-![](file://D:/%E6%96%87%E6%A1%A3/kubernetes/img/kubernetes/k8s_architecture_master.png?lastModify=1563798730)
-
 Node:
 
 ![](../.gitbook/assets/k8s_node.png)
-
-![](file://D:/%E6%96%87%E6%A1%A3/kubernetes/img/kubernetes/k8s_node.png?lastModify=1563798730)
 
 ### 虚拟机centos7环境搭建kubernetes集群
 
