@@ -1,6 +1,6 @@
 # Kubernetes学习
 
-### Kubernetes
+## Kubernetes
 
 Kubernetes是容器集群管理系统，是一个开源的平台，可以实现容器集群的自动化部署、自动扩缩容、维护等功能。
 
@@ -42,9 +42,9 @@ Node:
 
 ![](../.gitbook/assets/k8s_node.png)
 
-### 虚拟机centos7环境搭建kubernetes集群
+## 虚拟机centos7环境搭建kubernetes集群
 
-#### 一. 环境准备
+### 一. 环境准备
 
 总共三台虚拟机，一台master，两台node。
 
@@ -52,7 +52,7 @@ Node:
 
 操作系统：
 
-```text
+```bash
 [root@master ~]# uname -a
 Linux master 3.10.0-957.el7.x86_64 #1 SMP Thu Nov 8 23:39:32 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux
 ​
@@ -62,14 +62,14 @@ CentOS Linux release 7.6.1810 (Core)
 
 关闭防火墙：
 
-```text
+```bash
 [root@master ~]# systemctl disable firewalld.service
 [root@master ~]# systemctl stop firewalld.service
 ```
 
 关闭selinux：
 
-```text
+```bash
 [root@master ~]# vim /etc/selinux/config
 ​
 设置：SELINUX=disabled
@@ -77,14 +77,14 @@ CentOS Linux release 7.6.1810 (Core)
 
 开启ntpd：
 
-```text
+```bash
 [root@master ~]# systemctl enable ntpd
 [root@master ~]# systemctl start ntpd
 ```
 
 配置hosts：
 
-```text
+```bash
 [root@master ~]# cat /etc/hosts
 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
@@ -93,11 +93,11 @@ CentOS Linux release 7.6.1810 (Core)
 192.168.236.130 node2
 ```
 
-#### 二.etcd安装和部署
+### 二.etcd安装和部署
 
 安装：
 
-```text
+```bash
 [root@master ~]# yum install etcd -y
 ```
 
@@ -105,7 +105,7 @@ CentOS Linux release 7.6.1810 (Core)
 
 CLIENT\_URLS后面加入每台机器对应的ip，NAME为每台机器对应名称。
 
-```text
+```bash
 [root@master ~]# cat /etc/etcd/etcd.conf | grep -v "^#"
 ETCD_DATA_DIR="/var/lib/etcd/default.etcd"
 ETCD_LISTEN_CLIENT_URLS="http://192.168.236.128:2379,http://localhost:2379"
@@ -115,7 +115,7 @@ ETCD_ADVERTISE_CLIENT_URLS="http://192.168.236.128:2379,http://localhost:2379"
 
 启动etcd集群（所有节点）：
 
-```text
+```bash
 [root@master ~]# systemctl enable etcd
 [root@master ~]# systemctl start etcd
 [root@master ~]#  etcdctl set testdir/testkey0 0
@@ -125,11 +125,11 @@ member 8e9e05c52164694d is healthy: got healthy result from http://192.168.236.1
 cluster is healthy
 ```
 
-#### 三.kubernetes安装和部署
+### 三.kubernetes安装和部署
 
 安装：
 
-```text
+```bash
 [root@master ~]# yum install kubernetes -y
 ```
 
@@ -139,7 +139,7 @@ cluster is healthy
 
 * master
 
-```text
+```bash
 [root@master ~]# cat /etc/kubernetes/apiserver | grep -v "^#"
 KUBE_API_ADDRESS="--insecure-bind-address=0.0.0.0"
 KUBE_API_PORT="--port=8080"
@@ -149,7 +149,7 @@ KUBE_ADMISSION_CONTROL="--admission-control=NamespaceLifecycle,NamespaceExists,L
 KUBE_API_ARGS="--service_account_key_file=/tmp/serviceaccount.key"
 ```
 
-```text
+```bash
 [root@master ~]# cat /etc/kubernetes/config | grep -v "^#"
 KUBE_LOGTOSTDERR="--logtostderr=true"
 KUBE_LOG_LEVEL="--v=0"
@@ -159,7 +159,7 @@ KUBE_MASTER="--master=http://master:8080"
 
 * node
 
-```text
+```bash
 [root@node1 ~]# cat /etc/kubernetes/kubelet | grep -v "^#"
 KUBELET_ADDRESS="--address=0.0.0.0"
 KUBELET_HOSTNAME="--hostname-override=192.168.236.129"
@@ -168,7 +168,7 @@ KUBELET_POD_INFRA_CONTAINER="--pod-infra-container-image=registry.access.redhat.
 KUBELET_ARGS=""
 ```
 
-```text
+```bash
 [root@node1 ~]# cat /etc/kubernetes/config | grep -v "^#"
 KUBE_LOGTOSTDERR="--logtostderr=true"
 KUBE_LOG_LEVEL="--v=0"
@@ -178,7 +178,7 @@ KUBE_MASTER="--master=http://master:8080"
 
 启动docker（所有节点）：
 
-```text
+```bash
 [root@master ~]# systemctl enable docker
 [root@master ~]# systemctl start docker
 [root@master ~]# docker --version
@@ -189,14 +189,14 @@ Docker version 1.13.1, build b2f74b2/1.13.1
 
 * master
 
-```text
+```bash
 [root@master ~]# systemctl enable kube-apiserver kube-controller-manager kube-scheduler
 [root@master ~]# systemctl start kube-apiserver kube-controller-manager kube-scheduler
 ```
 
 * node
 
-```text
+```bash
 [root@node1 ~]# systemctl enable kubelet kube-proxy
 [root@node1 ~]# systemctl start kubelet kube-proxy
 ```
@@ -205,7 +205,7 @@ Docker version 1.13.1, build b2f74b2/1.13.1
 
 * master
 
-```text
+```bash
 [root@master ~]# netstat -tnlp
 Active Internet connections (only servers)
 Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
@@ -229,7 +229,7 @@ tcp6       0      0 :::4194                 :::*                    LISTEN      
 
 * node
 
-```text
+```bash
 [root@node1 ~]# netstat -ntlp
 Active Internet connections (only servers)
 Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
@@ -251,7 +251,7 @@ tcp6       0      0 :::4194                 :::*                    LISTEN      
 
 master上查看集群节点状态.
 
-```text
+```bash
 [root@master ~]# kubectl get node
 NAME              STATUS    AGE
 127.0.0.1         Ready     1d
@@ -259,17 +259,17 @@ NAME              STATUS    AGE
 192.168.236.130   Ready     1d
 ```
 
-#### 四. flannel安装配置
+### 四. flannel安装配置
 
 安装：
 
-```text
+```bash
 [root@node1 ~]# yum install flannel
 ```
 
 配置（所有节点）：
 
-```text
+```bash
 [root@master ~]# cat /etc/sysconfig/flanneld | grep -v "^#"
 FLANNEL_ETCD_ENDPOINTS="http://192.168.236.128:2379"
 FLANNEL_ETCD_PREFIX="/k8s/network"
@@ -277,13 +277,13 @@ FLANNEL_ETCD_PREFIX="/k8s/network"
 
 添加网络（master节点）：
 
-```text
+```bash
 [root@master ~]# etcdctl mk //k8s/network/config ‘{“Network”:“172.8.0.0/16”}’
 ```
 
 启动服务（所有节点）：
 
-```text
+```bash
 [root@master ~]# systemctl enable flanneld
 [root@master ~]# systemctl start flanneld
 ```
@@ -292,19 +292,19 @@ FLANNEL_ETCD_PREFIX="/k8s/network"
 
 * master
 
-```text
+```bash
 [root@master ~]# for SERVICES in docker kube-apiserver kube-controller-manager kube-scheduler; do systemctl restart $SERVICES ; done
 ```
 
 * node
 
-```text
+```bash
 [root@master ~]# systemctl restart kube-proxy kubelet docker
 ```
 
 查看flannel网络:
 
-```text
+```bash
 [root@master ~]# ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
@@ -336,15 +336,15 @@ FLANNEL_ETCD_PREFIX="/k8s/network"
        valid_lft forever preferred_lft forever
 ```
 
-#### 五. 测试
+### 五. 测试
 
 测试一个MySQL示例：
 
-```text
+```bash
 [root@master ~]# vim mysql-rc.yaml
 ```
 
-```text
+```bash
 apiVersion: v1
 kind: ReplicationController
 metadata:
@@ -370,13 +370,13 @@ spec:
 
 发布到k8s集群：
 
-```text
+```bash
 [root@master ~]# kubectl create -f mysql-rc.yaml
 ```
 
 查看：
 
-```text
+```bash
 [root@master ~]# kubectl get rc
 NAME      DESIRED   CURRENT   READY     AGE
 mysql     3         3         0         13s
@@ -388,13 +388,13 @@ mysql-jfd5p               0/1       ContainerCreating   0          3s
 mysql-stsb3               0/1       ErrImagePull        0          3s
 ```
 
-#### 六.常见错误
+### 六.常见错误
 
 **1. current为０的问题**
 
 如果出现如下情况：
 
-```text
+```bash
 [root@master ~]# kubectl get rc
 NAME      DESIRED   CURRENT   READY     AGE
 mysql     3         0         0         1m
@@ -402,7 +402,7 @@ mysql     3         0         0         1m
 
 解决方案：
 
-```text
+```bash
 # 1.Generate a signing key:
 [root@master ~]# openssl genrsa -out /tmp/serviceaccount.key 2048
 ​
@@ -437,7 +437,7 @@ mysql     3         3         0         5m
 
 查看/etc/docker/certs.d/registry.access.redhat.com/redhat-ca.crt 是一个软链接，但是链接过去后并没有真实的/etc/rhsm，所以需要使用yum安装：
 
-```text
+```bash
 yum install *rhsm*
 ```
 
@@ -445,7 +445,7 @@ yum install *rhsm*
 
 如果依然报错，可参考下面的方案：
 
-```text
+```bash
 wget <http://mirror.centos.org/centos/7/os/x86_64/Packages/python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm>
 ​
 rpm2cpio python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm | cpio -iv --to-stdout ./etc/rhsm/ca/redhat-uep.pem | tee /etc/rhsm/ca/redhat-uep.pem
@@ -455,7 +455,7 @@ rpm2cpio python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm | cpio -iv --to-std
 
 顺得的话会得到下面的结果:
 
-```text
+```bash
 docker pull registry.access.redhat.com/rhel7/pod-infrastructure:latest
 ​
 Trying to pull repository registry.access.redhat.com/rhel7/pod-infrastructure ...
@@ -473,7 +473,7 @@ Digest: sha256:92d43c37297da3ab187fc2b9e9ebfb243c1110d446c783ae1b989088495db931
 Status: Downloaded newer image for registry.access.redhat.com/rhel7/pod-infrastructure:latest
 ```
 
-```text
+```bash
 # 删除原来的创建的RC
 kubectl delete -f mysql-rc.yaml
 ​
@@ -492,7 +492,7 @@ mysql     3         3         0         5m
 
 查看路由：
 
-```text
+```bash
 [root@master ~]# route
 Kernel IP routing table
 Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
@@ -503,13 +503,13 @@ link-local      0.0.0.0         255.255.0.0     U     1002   0        0 ens33
 
 缺少默认路由，配置主机默认路由：
 
-```text
+```bash
 [root@master ~]# ip route add default           via  192.168.236.2  dev    ens33   proto  dhcp  metric  100
 ```
 
 重启kube-apiserver即可。
 
-#### References
+### References
 
 1. [Kubernetes中文社区 \| 中文文档](http://docs.kubernetes.org.cn/)
 2. [Kubernetes指南](https://kubernetes.feisky.xyz/)
